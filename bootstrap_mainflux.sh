@@ -10,8 +10,6 @@
 BINARY="/data/mainflux-cli"
 
 TOKEN=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r users token $MAINFLUX_USER $MAINFLUX_PASSWORD)
-#/Users/jan/Projekte/mainflux/build/mainflux-cli -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r things create '{"name":"node-red"}' $TOKEN
-#Users/jan/Projekte/mainflux/build/mainflux-cli -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r things get all -n node-red $TOKEN 
 NODE_RED_THINGS=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r things get all -n node-red $TOKEN)
 NODE_RED_COUNT=$(echo $NODE_RED_THINGS | jq '.total')
 CHANNELS=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r channels get all -n $MAINFLUX_USER $TOKEN)
