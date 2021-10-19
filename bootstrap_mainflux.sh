@@ -1,11 +1,11 @@
 #!/bin/bash
-: "${MAINFLUX_THINGS_HOST:='http://mainflux-things.mf.svc.cluster.local:8182'}"
+MAINFLUX_THINGS_HOST="${MAINFLUX_THINGS_HOST:-http://mainflux-things.mf.svc.cluster.local:8182}"
 #MAINFLUX_THINGS_HOST="https://mainflux.k8s.h.kryno.de"
-: "${MAINFLUX_USERS_HOST:='http://mainflux-users.mf.svc.cluster.local:8180'}"
+MAINFLUX_USERS_HOST="${MAINFLUX_USERS_HOST:-http://mainflux-users.mf.svc.cluster.local:8180}"
 #MAINFLUX_USERS_HOST="https://mainflux.k8s.h.kryno.de"
-: "${MAINFLUX_BOOTSTRAP_HOST:='http://mainflux-bootstrap.mf.svc.cluster.local:8182'}"
+MAINFLUX_BOOTSTRAP_HOST="${MAINFLUX_BOOTSTRAP_HOST:-http://mainflux-bootstrap.mf.svc.cluster.local:8182}"
 #MAINFLUX_BOOTSTRAP_HOST="https://mainflux.k8s.h.kryno.de"
-: "${ENV_FILE:='/data/.env'}"
+ENV_FILE="${ENV_FILE:-/data/.env}"
 #ENV_FILE="/data/.env"
 BINARY="/data/mainflux-cli"
 
