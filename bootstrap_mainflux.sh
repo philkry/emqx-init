@@ -48,14 +48,13 @@ try {
     else
         # Config does not exist
         Log "No bootstrap config found. Creating..."
-        BS_JSON_STRING='{"external_id": "node-red", "external_key":"'"$EXTERNAL_KEY"'", "name": "node-red", "channels": ""}'
         BS_JSON_STRING=$( jq -n \
                     --arg ek "$EXTERNAL_KEY" \
                     --arg ei "node-red" \
                     --arg ch "$CHANNEL_ID" \
                     --arg na "node-red" \
                     '{external_id: $ei, external_key: $ek, name: $na, channels: [ $ch ]}' )
-        curl -s --request POST $MAINFLUX_BOOTSTRAP_HOST/things/configs --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d "${BS_JSON_STRING}"
+        curl -s -v --request POST $MAINFLUX_BOOTSTRAP_HOST/things/configs --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d "${BS_JSON_STRING}"
         BOOTSTRAP_CONFIG=$(curl -s --request GET $MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red --header "Authorization: ${TOKEN}")
         MQTT_USER=$(echo $BOOTSTRAP_CONFIG | jq --raw-output '.configs[].mainflux_id')
         MQTT_PASSWORD=$(echo $BOOTSTRAP_CONFIG | jq --raw-output '.configs[].mainflux_key')
