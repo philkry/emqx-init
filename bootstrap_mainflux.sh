@@ -54,7 +54,7 @@ try {
                     --arg ch "$CHANNEL_ID" \
                     --arg na "node-red" \
                     '{external_id: $ei, external_key: $ek, name: $na, channels: [ $ch ]}' )
-        curl -s -v --request POST $MAINFLUX_BOOTSTRAP_HOST/things/configs --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d "${BS_JSON_STRING}"
+        curl -s --trace - --request POST $MAINFLUX_BOOTSTRAP_HOST/things/configs --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d "${BS_JSON_STRING}"
         BOOTSTRAP_CONFIG=$(curl -s --request GET $MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red --header "Authorization: ${TOKEN}")
         MQTT_USER=$(echo $BOOTSTRAP_CONFIG | jq --raw-output '.configs[].mainflux_id')
         MQTT_PASSWORD=$(echo $BOOTSTRAP_CONFIG | jq --raw-output '.configs[].mainflux_key')
