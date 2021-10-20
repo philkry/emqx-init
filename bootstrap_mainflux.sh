@@ -60,6 +60,8 @@ try {
         MQTT_USER=$(echo $BOOTSTRAP_CONFIG | jq --raw-output '.configs[].mainflux_id')
         MQTT_PASSWORD=$(echo $BOOTSTRAP_CONFIG | jq --raw-output '.configs[].mainflux_key')
         Log "$(UI.Color.Green)MQTT user is ${MQTT_USER}$(UI.Color.Default)"  
+        Log "Connecting Thing to Channel"
+        $BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r things connect $MQTT_USER $CHANNEL_ID $TOKEN
         Log "Activating user"
         curl -s --request POST $MAINFLUX_BOOTSTRAP_HOST/things/state/$MQTT_USER --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d '{"state": 1}'  
     fi
