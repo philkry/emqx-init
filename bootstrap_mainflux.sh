@@ -54,13 +54,13 @@ try {
                     --arg ch "$CHANNEL_ID" \
                     --arg na "node-red" \
                     '{external_id: $ei, external_key: $ek, name: $na, channels: [ $ch ]}' )
-        curl -s --trace - --request POST $MAINFLUX_BOOTSTRAP_HOST/things/configs --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d "${BS_JSON_STRING}"
+        curl -s --trace-ascii - --request POST $MAINFLUX_BOOTSTRAP_HOST/things/configs --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' --data-raw "${BS_JSON_STRING}"
         BOOTSTRAP_CONFIG=$(curl -s --request GET $MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red --header "Authorization: ${TOKEN}")
         MQTT_USER=$(echo $BOOTSTRAP_CONFIG | jq --raw-output '.configs[].mainflux_id')
         MQTT_PASSWORD=$(echo $BOOTSTRAP_CONFIG | jq --raw-output '.configs[].mainflux_key')
         Log "$(UI.Color.Green)MQTT user is ${MQTT_USER}$(UI.Color.Default)"  
         Log "Connecting Thing to Channel"
-        $BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r things connect $MQTT_USER $CHANNEL_ID $TOKEN
+        #$BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r things connect $MQTT_USER $CHANNEL_ID $TOKEN
         Log "Activating user"
         curl -s --request POST $MAINFLUX_BOOTSTRAP_HOST/things/state/$MQTT_USER --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d '{"state": 1}'  
     fi
