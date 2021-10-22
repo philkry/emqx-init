@@ -75,7 +75,7 @@ try {
     echo "MQTT_ROOT_TOPIC=${MQTT_ROOT_TOPIC}" >> $ENV_FILE
     echo "MQTT_TOPIC_TELE=${MQTT_ROOT_TOPIC}/tele/#" >> $ENV_FILE
     echo "MQTT_TOPIC_STAT=${MQTT_ROOT_TOPIC}/stat/#" >> $ENV_FILE
-    echo "MQTT_TOPIC_CMND=${MQTT_ROOT_TOPIC}/cmnd/#" >> $ENV_FILE
+    echo "MQTT_TOPIC_CMND=${MQTT_ROOT_TOPIC}/cmnd/" >> $ENV_FILE
 } catch {
     Log "Could not bootstrap Node-Red Thing in Mainflux!"
     Log "Caught Exception:$(UI.Color.Red) $__BACKTRACE_COMMAND__ $(UI.Color.Default)"
