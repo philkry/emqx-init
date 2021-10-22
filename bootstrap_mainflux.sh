@@ -23,10 +23,10 @@ try {
     CHANNELS=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r channels get all -n $MAINFLUX_USER $TOKEN || e="Failed to retrieve channel list!" throw)
     BOOTSTRAP_CONFIG=$(curl -s --fail-with-body --request GET $MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red --header "Authorization: ${TOKEN}" || e="Failed to check for existing bootstrap config!" throw)
 
-    if [  $(echo $CHANNELS | jq '.total') -eq 1 ]
+    if [  $(echo $CHANNELS | jq '.total') -gt 1 ]
     then
         # Channel exists
-        CHANNEL_ID=$(echo $CHANNELS | jq --raw-output '.channels[].id')
+        CHANNEL_ID=$(echo $CHANNELS | jq --raw-output '.channels[0].id')
         Log "Channel found with ID ${CHANNEL_ID}"
     else
         # Channel does not exist
