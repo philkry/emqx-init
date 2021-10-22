@@ -67,11 +67,15 @@ try {
         curl -s --fail-with-body --request POST $MAINFLUX_BOOTSTRAP_HOST/things/state/$MQTT_USER --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d '{"state": 1}'  
     fi
 
+    MQTT_ROOT_TOPIC="channels/${CHANNEL_ID}/messages"
+
     Log "Creating ENV file"
     echo "MQTT_USER=${MQTT_USER}" > $ENV_FILE
     echo "MQTT_PASSWORD=${MQTT_PASSWORD}" >> $ENV_FILE
-    echo "MQTT_TOPIC_TELE=channels/${CHANNEL_ID}/messages/tele/#" >> $ENV_FILE
-    echo "MQTT_TOPIC_STAT=channels/${CHANNEL_ID}/messages/stat/#" >> $ENV_FILE
+    echo "MQTT_ROOT_TOPIC=${MQTT_ROOT_TOPIC}" >> $ENV_FILE
+    echo "MQTT_TOPIC_TELE=${MQTT_ROOT_TOPIC}/tele/#" >> $ENV_FILE
+    echo "MQTT_TOPIC_STAT=${MQTT_ROOT_TOPIC}/stat/#" >> $ENV_FILE
+    echo "MQTT_TOPIC_CMND=${MQTT_ROOT_TOPIC}/cmnd/#" >> $ENV_FILE
 } catch {
     Log "Could not bootstrap Node-Red Thing in Mainflux!"
     Log "Caught Exception:$(UI.Color.Red) $__BACKTRACE_COMMAND__ $(UI.Color.Default)"
