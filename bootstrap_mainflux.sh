@@ -20,7 +20,7 @@ try {
     #NODE_RED_THINGS=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r things get all -n node-red $TOKEN)
     #NODE_RED_COUNT=$(echo $NODE_RED_THINGS | jq '.total')
     CHANNELS=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r channels get all -n $MAINFLUX_USER $TOKEN || e="Failed to retrieve channel list!" throw)
-    BOOTSTRAP_CONFIG=$(curl -s --location --request GET $MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red --header "Authorization: ${TOKEN}" || e="Failed to check for existing bootstrap config!" throw)
+    BOOTSTRAP_CONFIG=$(curl -s --fail-with-body --request GET $MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red --header "Authorization: ${TOKEN}" || e="Failed to check for existing bootstrap config!" throw)
 
     if [  $(echo $CHANNELS | jq '.total') -eq 1 ]
     then
@@ -40,7 +40,7 @@ try {
     if [  $(echo $BOOTSTRAP_CONFIG | jq '.total') -eq 1 ]
     then
         # Config exists
-        BOOTSTRAP_DATA=$(curl -s --location --request GET $MAINFLUX_BOOTSTRAP_HOST/things/bootstrap/node-red --header "Authorization: ${EXTERNAL_KEY}")
+        BOOTSTRAP_DATA=$(curl -s --fail-with-body --request GET $MAINFLUX_BOOTSTRAP_HOST/things/bootstrap/node-red --header "Authorization: ${EXTERNAL_KEY}")
         MQTT_USER=$(echo $BOOTSTRAP_DATA | jq --raw-output '.mainflux_id')
         MQTT_PASSWORD=$(echo $BOOTSTRAP_DATA | jq --raw-output '.mainflux_key')
         CHANNEL_ID=$(echo $BOOTSTRAP_DATA | jq --raw-output '.mainflux_channels[0].id')
@@ -55,7 +55,7 @@ try {
                     --arg na "node-red" \
                     '{external_id: $ei, external_key: $ek, name: $na, channels: [ $ch ]}' )
         curl -s --request POST $MAINFLUX_BOOTSTRAP_HOST/things/configs --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' --data-raw "${BS_JSON_STRING}"
-        BOOTSTRAP_DATA=$(sleep 2 && curl -s --location --request GET $MAINFLUX_BOOTSTRAP_HOST/things/bootstrap/node-red --header "Authorization: ${EXTERNAL_KEY}")
+        BOOTSTRAP_DATA=$(sleep 2 && curl -s --fail-with-body --request GET $MAINFLUX_BOOTSTRAP_HOST/things/bootstrap/node-red --header "Authorization: ${EXTERNAL_KEY}")
         MQTT_USER=$(echo $BOOTSTRAP_DATA | jq --raw-output '.mainflux_id')
         MQTT_PASSWORD=$(echo $BOOTSTRAP_DATA | jq --raw-output '.mainflux_key')
         CHANNEL_ID=$(echo $BOOTSTRAP_DATA | jq --raw-output '.mainflux_channels[0].id')
@@ -63,7 +63,7 @@ try {
         Log "Connecting Thing to Channel"
         #$BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r things connect $MQTT_USER $CHANNEL_ID $TOKEN
         Log "Activating user"
-        curl -s --request POST $MAINFLUX_BOOTSTRAP_HOST/things/state/$MQTT_USER --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d '{"state": 1}'  
+        curl -s --fail-with-body --request POST $MAINFLUX_BOOTSTRAP_HOST/things/state/$MQTT_USER --header "Authorization: ${TOKEN}" --header 'Content-Type: application/json' -d '{"state": 1}'  
     fi
 
     Log "Creating ENV file"
