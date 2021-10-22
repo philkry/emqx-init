@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+TERM=xterm-256color
 source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/lib/oo-bootstrap.sh"
 import util/log util/exception util/tryCatch
 
