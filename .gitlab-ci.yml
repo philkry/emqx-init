@@ -36,8 +36,8 @@ docker-build:
         echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       fi
     - docker-buildx create --use  
-    - docker-buildx build --platform linux/amd64,linux/arm64/v8 --pull -t "$CI_REGISTRY_IMAGE${tag}" .
-    - docker push "$CI_REGISTRY_IMAGE${tag}"
+    - docker-buildx build --platform linux/amd64,linux/arm64/v8 --pull -t "$CI_REGISTRY_IMAGE${tag}" --push .
+
   # Run this job in a branch where a Dockerfile exists
   rules:
     - if: $CI_COMMIT_BRANCH
