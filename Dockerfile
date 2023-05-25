@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine AS ci
+FROM golang:1.19-alpine AS cli
 ARG SVC
 ARG GOARCH
 ARG GOARM
