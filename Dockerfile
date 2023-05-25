@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/cloud-kryno-net/mainflux/cli as cli
+FROM registry.gitlab.com/cloud-kryno-net/mainflux/cli:0.12.1 as cli
 
 
 FROM alpine

@@ -21,8 +21,8 @@ docker-build:
   services:
     - docker:dind
   before_script:
-    - docker login -u philkry -p "$ACCESS_TOKEN" registry.gitlab.com/cloud-kryno-net/mainflux/cli
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - echo $ACCESS_TOKEN | docker login -u philkry --password-stdin registry.gitlab.com/cloud-kryno-net/mainflux
+    - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - wget -O /usr/bin/docker-buildx https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}
     - chmod +x /usr/bin/docker-buildx    
   # Default branch leaves tag empty (= latest tag)
