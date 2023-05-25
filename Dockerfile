@@ -9,5 +9,6 @@ COPY bootstrap_mainflux.sh /data/
 COPY lib /data/lib/
 #COPY --from=cli /exe /data/mainflux-cli
 COPY mainflux-cli.arm64 /data/mainflux-cli
+RUN chmod +x /data/mainflux-cli
 ENTRYPOINT [ "/data/bootstrap_mainflux.sh" ]
 
