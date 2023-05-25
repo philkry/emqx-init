@@ -11,7 +11,7 @@ WORKDIR /go/src/github.com/mainflux/mainflux
 COPY . .
 RUN apk update \
     && apk add make\
-    && GOARCH=$(cut -c 7-11 <<< ${TARGETPLATFORM}) make cli \
+    && export GOARCH=$(cut -c 7-11 <<< ${TARGETPLATFORM}) && make cli \
     && mv build/mainflux-cli /exe
 
 FROM scratch
