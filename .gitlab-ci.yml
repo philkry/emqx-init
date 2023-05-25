@@ -9,6 +9,10 @@
 #
 # This template uses one generic job with conditional builds
 # for the default branch and all other (MR) branches.
+variables:
+  DOCKER_DRIVER: overlay2
+  BUILDX_VERSION: "v0.6.1"
+  BUILDX_ARCH: "linux-amd64"
 
 docker-build:
   # Use the official docker image.
@@ -18,6 +22,8 @@ docker-build:
     - docker:dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - wget -O /usr/bin/docker-buildx https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}
+    - chmod +x /usr/bin/docker-buildx    
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
@@ -29,7 +35,8 @@ docker-build:
         tag=":$CI_COMMIT_REF_SLUG"
         echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       fi
-    - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
+    - docker-buildx create --use  
+    - docker-buildx build --platform linux/amd64,linux/arm64/v8 --pull -t "$CI_REGISTRY_IMAGE${tag}" .
     - docker push "$CI_REGISTRY_IMAGE${tag}"
   # Run this job in a branch where a Dockerfile exists
   rules:
