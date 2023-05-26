@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine AS cli
+FROM golang:1.19-alpine AS builder
 ARG SVC
 ARG GOARCH
 ARG GOARM
@@ -7,26 +7,33 @@ ARG COMMIT
 ARG TIME
 ARG TARGETPLATFORM
 
-WORKDIR /go/src/github.com/mainflux/mainflux
-COPY . .
-RUN apk update \
-    && apk add make\
-    && GOARCH=$(echo ${TARGETPLATFORM} | cut -c 7-11) make cli \
-    && mv build/mainflux-cli /exe
+# Set the working directory
+WORKDIR /app
 
-FROM scratch
-# Certificates are needed so that mailing util can work.
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /exe /
-ENTRYPOINT ["/exe"]
+# Clone the Mainflux repository
+RUN apk --no-cache add git
+RUN git clone https://github.com/mainflux/mainflux.git .
+
+# Build the Mainflux CLI service for AMD64
+RUN CGO_ENABLED=0 GOARCH=amd64 go build -o mainflux-cli-amd64 ./cmd/cli
+
+# Build the Mainflux CLI service for ARM64
+RUN CGO_ENABLED=0 GOARCH=arm64 go build -o mainflux-cli-arm64 ./cmd/cli
 
 
 FROM alpine
 ENV TERM xterm-256color
 RUN apk --no-cache add bash curl jq \
     && mkdir /data
-COPY bootstrap_mainflux.sh /data/
-COPY lib /data/lib/
-COPY --from=cli /exe /data/mainflux-cli
-ENTRYPOINT [ "/data/bootstrap_mainflux.sh" ]
+
+# Set the working directory
+WORKDIR /data    
+
+# Copy the Mainflux CLI service based on the host architecture
+COPY --from=builder /app/mainflux-cli-{{.TARGETPLATFORM}} ./mainflux-cli
+
+COPY bootstrap_mainflux.sh .
+COPY lib ./lib/
+
+ENTRYPOINT [ "./bootstrap_mainflux.sh" ]
 
