@@ -33,7 +33,7 @@ try {
         # Channel does not exist
         Log "No channel found. Creating..."
         JSON_STRING='{"name":"'"$MAINFLUX_USER"'"}'
-        CHANNEL_ID=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r channels create $JSON_STRING $TOKEN)
+        CHANNEL_ID=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST --raw channels create $JSON_STRING $TOKEN)
         Log "$(UI.Color.Green)Channel created with ID ${CHANNEL_ID}$(UI.Color.Default)"
     fi
 
