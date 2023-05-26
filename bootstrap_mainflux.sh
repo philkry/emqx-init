@@ -21,7 +21,8 @@ try {
     #NODE_RED_THINGS=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST -r things get all -n node-red $TOKEN)
     #NODE_RED_COUNT=$(echo $NODE_RED_THINGS | jq '.total')
     CHANNELS=$($BINARY -t $MAINFLUX_THINGS_HOST -u $MAINFLUX_USERS_HOST --raw channels get all -n $MAINFLUX_USER $TOKEN || e="Failed to retrieve channel list!" throw)
-    BOOTSTRAP_CONFIG=$(curl -s --fail-with-body --request GET $MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red --header "Authorization: ${TOKEN}" || e="Failed to check for existing bootstrap config!" throw)
+    #BOOTSTRAP_CONFIG=$(curl -s --fail-with-body --request GET $MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red --header "Authorization: ${TOKEN}" || e="Failed to check for existing bootstrap config!" throw)
+    BOOTSTRAP_CONFIG=$(curl -s --request GET $MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red --header "Authorization: ${TOKEN}")
 
     if [  $(echo $CHANNELS | jq '.total') -gt 1 ]
     then
