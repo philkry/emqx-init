@@ -13,6 +13,7 @@ variables:
   DOCKER_DRIVER: overlay2
   BUILDX_VERSION: "v0.6.1"
   BUILDX_ARCH: "linux-amd64"
+  VERSION: "0.12.1"
 
 docker-build:
   # Use the official docker image.
@@ -21,7 +22,6 @@ docker-build:
   services:
     - docker:dind
   before_script:
-    - echo $ACCESS_TOKEN | docker login -u philkry --password-stdin registry.gitlab.com/cloud-kryno-net/mainflux
     - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - wget -O /usr/bin/docker-buildx https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}
     - chmod +x /usr/bin/docker-buildx    
@@ -37,7 +37,7 @@ docker-build:
         echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       fi
     - docker-buildx create --use  
-    - docker-buildx build --platform linux/amd64,linux/arm64/v8 --pull -t "$CI_REGISTRY_IMAGE${tag}" --push .
+    - docker-buildx build --build-arg VERSION=$VERSION --platform linux/amd64,linux/arm64/v8 --pull -t "$CI_REGISTRY_IMAGE${tag}" --push .
 
   # Run this job in a branch where a Dockerfile exists
   rules:

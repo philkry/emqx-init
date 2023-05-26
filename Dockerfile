@@ -13,6 +13,7 @@ WORKDIR /app
 # Clone the Mainflux repository
 RUN apk --no-cache add git
 RUN git clone https://github.com/mainflux/mainflux.git .
+RUN git checkout $VERSION
 
 # Build the Mainflux CLI service for AMD64
 RUN CGO_ENABLED=0 GOARCH=amd64 go build -o mainflux-cli-amd64 ./cmd/cli
