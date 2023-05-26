@@ -28,16 +28,16 @@ docker-build:
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
-    - |
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        tag=""
-        echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
-      else
-        tag=":$CI_COMMIT_REF_SLUG"
-        echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
-      fi
+    # - |
+    #   if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+    #     tag=""
+    #     echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
+    #   else
+    #     tag=":$CI_COMMIT_REF_SLUG"
+    #     echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
+    #   fi
     - docker-buildx create --use  
-    - docker-buildx build --build-arg VERSION=$VERSION --platform linux/amd64,linux/arm64/v8 --pull -t "$CI_REGISTRY_IMAGE${tag}" --push .
+    - docker-buildx build --build-arg VERSION=$VERSION --platform linux/amd64,linux/arm64/v8 --pull -t "$CI_REGISTRY_IMAGE:${VERSION}" --push .
 
   # Run this job in a branch where a Dockerfile exists
   rules:
