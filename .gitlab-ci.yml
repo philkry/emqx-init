@@ -24,6 +24,7 @@ docker-build:
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - docker buildx install
+    - apk --no-cache add git
     #- wget -O /usr/bin/docker-buildx https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}
     #- chmod +x /usr/bin/docker-buildx    
   # Default branch leaves tag empty (= latest tag)

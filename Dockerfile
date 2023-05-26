@@ -27,7 +27,7 @@ RUN CGO_ENABLED=0 GOARCH=$GOARCH go build -o mainflux-cli ./cmd/cli
 
 FROM alpine
 ENV TERM xterm-256color
-RUN apk --no-cache add bash curl jq git \
+RUN apk --no-cache add bash curl jq \
     && mkdir /data
 # Set the working directory
 WORKDIR /data    
