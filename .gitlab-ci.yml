@@ -23,8 +23,9 @@ docker-build:
     - docker:dind
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-    - wget -O /usr/bin/docker-buildx https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}
-    - chmod +x /usr/bin/docker-buildx    
+    - docker buildx install
+    #- wget -O /usr/bin/docker-buildx https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.${BUILDX_ARCH}
+    #- chmod +x /usr/bin/docker-buildx    
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
@@ -36,8 +37,8 @@ docker-build:
     #     tag=":$CI_COMMIT_REF_SLUG"
     #     echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
     #   fi
-    - docker-buildx create --use  
-    - docker-buildx build --build-arg VERSION=$VERSION --platform linux/amd64,linux/arm64 --pull -t "$CI_REGISTRY_IMAGE:${VERSION}" --push .
+    - docker buildx create --use  
+    - docker buildx build --build-arg VERSION=$VERSION --platform linux/amd64,linux/arm64 --pull -t "$CI_REGISTRY_IMAGE:${VERSION}" --push .
 
   # Run this job in a branch where a Dockerfile exists
   rules:
