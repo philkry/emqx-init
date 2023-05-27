@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -x
 # Set the script execution environment
 TERM=xterm-256color
 
@@ -40,6 +40,7 @@ try {
     BOOTSTRAP_CONFIG=$(curl -s --request GET "$MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red" --header "Authorization: $TOKEN")
     if [ "$BOOTSTRAP_CONFIG" != '{"error":"non-existent entity"}' ] && [ "$(echo "$BOOTSTRAP_CONFIG" | jq '.total')" -eq 1 ]; then
         # Config exists
+        Log "Found existing bootstrap config"
         BOOTSTRAP_DATA=$(curl -s --request GET "$MAINFLUX_BOOTSTRAP_HOST/things/bootstrap/node-red" --header "Authorization: $TOKEN")
         MQTT_USER=$(echo "$BOOTSTRAP_DATA" | jq --raw-output '.mainflux_id')
         MQTT_PASSWORD=$(echo "$BOOTSTRAP_DATA" | jq --raw-output '.mainflux_key')
