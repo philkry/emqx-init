@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+
 # Set the script execution environment
 TERM=xterm-256color
 
@@ -10,7 +10,7 @@ import util/log util/exception util/tryCatch
 # Set the log output
 namespace mainfluxBootstrap
 Log::AddOutput mainfluxBootstrap STDERR
-
+set -x
 # Define the Mainflux hosts and other variables
 MAINFLUX_THINGS_HOST="${MAINFLUX_THINGS_HOST:-mainflux-things.mf.svc.cluster.local:8182}"
 MAINFLUX_USERS_HOST="${MAINFLUX_USERS_HOST:-mainflux-users.mf.svc.cluster.local:8180}"
@@ -38,13 +38,10 @@ try {
 
     # Check if the bootstrap configuration exists
     BOOTSTRAP_CONFIG=$(curl -s --request GET "$MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red" --header "Authorization: $TOKEN")
-    if [ "$BOOTSTRAP_CONFIG" != '{"error":"non-existent entity"}' ] && [ "$(echo "$BOOTSTRAP_CONFIG" | jq '.total')" -eq 1 ]; then
+    if [ "$BOOTSTRAP_CONFIG" != "null" ] && [ "$(echo "$BOOTSTRAP_CONFIG" | jq '.total')" -eq 1 ]; then
         # Config exists
-        Log "Found existing bootstrap config"
-        BOOTSTRAP_DATA=$(curl -s --request GET "$MAINFLUX_BOOTSTRAP_HOST/things/bootstrap/node-red" --header "Authorization: $TOKEN")
-        MQTT_USER=$(echo "$BOOTSTRAP_DATA" | jq --raw-output '.mainflux_id')
-        MQTT_PASSWORD=$(echo "$BOOTSTRAP_DATA" | jq --raw-output '.mainflux_key')
-        CHANNEL_ID=$(echo "$BOOTSTRAP_DATA" | jq --raw-output '.mainflux_channels[0].id')
+        MQTT_USER=$(echo "$BOOTSTRAP_CONFIG" | jq --raw-output '.configs[0].mainflux_id')
+        MQTT_PASSWORD=$(echo "$BOOTSTRAP_CONFIG" | jq --raw-output '.configs[0].mainflux_key')
         Log "MQTT user is $MQTT_USER"
     else
         # Config does not exist, create it
