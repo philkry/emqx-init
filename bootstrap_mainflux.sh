@@ -10,7 +10,7 @@ import util/log util/exception util/tryCatch
 # Set the log output
 namespace mainfluxBootstrap
 Log::AddOutput mainfluxBootstrap STDERR
-set -x
+
 # Define the Mainflux hosts and other variables
 MAINFLUX_THINGS_HOST="${MAINFLUX_THINGS_HOST:-mainflux-things.mf.svc.cluster.local:8182}"
 MAINFLUX_USERS_HOST="${MAINFLUX_USERS_HOST:-mainflux-users.mf.svc.cluster.local:8180}"
