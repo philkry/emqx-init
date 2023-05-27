@@ -24,7 +24,7 @@ try {
 
     # Check if the channel exists
     CHANNELS=$($BINARY -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw channels get all -n "$MAINFLUX_USER" "$TOKEN" || { e="Failed to retrieve channel list!"; throw; })
-    if [ "$(echo "$CHANNELS" | jq '.total')" -gt 0 ]; then
+    if [ -n "$CHANNELS" ] && [ "$(echo "$CHANNELS" | jq '.total')" -gt 0 ]; then
         # Channel exists
         CHANNEL_ID=$(echo "$CHANNELS" | jq --raw-output '.channels[0].id')
         Log "Channel found with ID $CHANNEL_ID"
@@ -38,7 +38,7 @@ try {
 
     # Check if the bootstrap configuration exists
     BOOTSTRAP_CONFIG=$(curl -s --request GET "$MAINFLUX_BOOTSTRAP_HOST/things/configs?name=node-red" --header "Authorization: $TOKEN")
-    if [ "$(echo "$BOOTSTRAP_CONFIG" | jq '.total')" -eq 1 ]; then
+    if [ "$BOOTSTRAP_CONFIG" != "null" ] && [ "$(echo "$BOOTSTRAP_CONFIG" | jq '.total')" -eq 1 ]; then
         # Config exists
         BOOTSTRAP_DATA=$(curl -s --request GET "$MAINFLUX_BOOTSTRAP_HOST/things/bootstrap/node-red" --header "Authorization: $TOKEN")
         MQTT_USER=$(echo "$BOOTSTRAP_DATA" | jq --raw-output '.mainflux_id')
@@ -66,7 +66,7 @@ try {
         Log "$(UI.Color.Green)MQTT user is $MQTT_USER$(UI.Color.Default)"
         Log "Connecting Thing to Channel"
         # Uncomment the following line if you want to connect the Thing to the channel
-        $BINARY -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" -r things connect "$MQTT_USER" "$CHANNEL_ID" "$TOKEN"
+        $BINARY -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw things connect "$MQTT_USER" "$CHANNEL_ID" "$TOKEN"
         Log "Activating user"
         curl -s --fail-with-body --request POST "$MAINFLUX_BOOTSTRAP_HOST/things/state/$MQTT_USER" \
             --header "Authorization: $TOKEN" \
