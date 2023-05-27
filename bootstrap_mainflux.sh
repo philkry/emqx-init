@@ -12,18 +12,18 @@ namespace mainfluxBootstrap
 Log::AddOutput mainfluxBootstrap STDERR
 
 # Define the Mainflux hosts and other variables
-MAINFLUX_THINGS_HOST="${MAINFLUX_THINGS_HOST:-http://mainflux-things.mf.svc.cluster.local:8182}"
-MAINFLUX_USERS_HOST="${MAINFLUX_USERS_HOST:-http://mainflux-users.mf.svc.cluster.local:8180}"
-MAINFLUX_BOOTSTRAP_HOST="${MAINFLUX_BOOTSTRAP_HOST:-http://mainflux-bootstrap.mf.svc.cluster.local:8182}"
+MAINFLUX_THINGS_HOST="${MAINFLUX_THINGS_HOST:-mainflux-things.mf.svc.cluster.local:8182}"
+MAINFLUX_USERS_HOST="${MAINFLUX_USERS_HOST:-mainflux-users.mf.svc.cluster.local:8180}"
+MAINFLUX_BOOTSTRAP_HOST="${MAINFLUX_BOOTSTRAP_HOST:-mainflux-bootstrap.mf.svc.cluster.local:8182}"
 ENV_FILE="${ENV_FILE:-/data/env/.env}"
 BINARY="/data/mainflux-cli"
 
 try {
     # Retrieve the JWT token
-    TOKEN=$($BINARY -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw users token "$MAINFLUX_USER" "$MAINFLUX_PASSWORD" || { e="Failed to retrieve JWT!"; throw; })
+    TOKEN=$($BINARY -m "http:/" -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw users token "$MAINFLUX_USER" "$MAINFLUX_PASSWORD" || { e="Failed to retrieve JWT!"; throw; })
 
     # Check if the channel exists
-    CHANNELS=$($BINARY -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw channels get all -n "$MAINFLUX_USER" "$TOKEN" || { e="Failed to retrieve channel list!"; throw; })
+    CHANNELS=$($BINARY -m "http:/" -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw channels get all -n "$MAINFLUX_USER" "$TOKEN" || { e="Failed to retrieve channel list!"; throw; })
     if [ -n "$CHANNELS" ] && [ "$(echo "$CHANNELS" | jq '.total')" -gt 0 ]; then
         # Channel exists
         CHANNEL_ID=$(echo "$CHANNELS" | jq --raw-output '.channels[0].id')
@@ -32,7 +32,7 @@ try {
         # Channel does not exist, create it
         Log "No channel found. Creating..."
         JSON_STRING='{"name":"'"$MAINFLUX_USER"'"}'
-        CHANNEL_ID=$($BINARY -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw channels create "$JSON_STRING" "$TOKEN")
+        CHANNEL_ID=$($BINARY -m "http:/" -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw channels create "$JSON_STRING" "$TOKEN")
         Log "$(UI.Color.Green)Channel created with ID $CHANNEL_ID$(UI.Color.Default)"
     fi
 
@@ -66,7 +66,7 @@ try {
         Log "$(UI.Color.Green)MQTT user is $MQTT_USER$(UI.Color.Default)"
         Log "Connecting Thing to Channel"
         # Uncomment the following line if you want to connect the Thing to the channel
-        $BINARY -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw things connect "$MQTT_USER" "$CHANNEL_ID" "$TOKEN"
+        $BINARY -m "http:/" -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw things connect "$MQTT_USER" "$CHANNEL_ID" "$TOKEN"
         Log "Activating user"
         curl -s --fail-with-body --request POST "$MAINFLUX_BOOTSTRAP_HOST/things/state/$MQTT_USER" \
             --header "Authorization: $TOKEN" \
