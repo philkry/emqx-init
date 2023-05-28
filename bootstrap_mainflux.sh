@@ -10,7 +10,7 @@ import util/log util/exception util/tryCatch
 # Set the log output
 namespace mainfluxBootstrap
 Log::AddOutput mainfluxBootstrap STDERR
-set -x
+
 # Define the Mainflux hosts and other variables
 MAINFLUX_THINGS_HOST="${MAINFLUX_THINGS_HOST:-mainflux-things.mf.svc.cluster.local:8182}"
 MAINFLUX_USERS_HOST="${MAINFLUX_USERS_HOST:-mainflux-users.mf.svc.cluster.local:8180}"
@@ -62,15 +62,17 @@ try {
         MQTT_PASSWORD=$(echo "$BOOTSTRAP_DATA" | jq --raw-output '.mainflux_key')
         CHANNEL_ID=$(echo "$BOOTSTRAP_DATA" | jq --raw-output '.mainflux_channels[0].id')
         Log "$(UI.Color.Green)MQTT user is $MQTT_USER$(UI.Color.Default)"
-        Log "Connecting Thing to Channel"
-        # Uncomment the following line if you want to connect the Thing to the channel
-        $BINARY -m "http:/" -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw things connect "$MQTT_USER" "$CHANNEL_ID" "$TOKEN"
-        Log "Activating user"
-        curl -s --fail-with-body --request POST "$MAINFLUX_BOOTSTRAP_HOST/things/state/$MQTT_USER" \
-            --header "Authorization: $TOKEN" \
-            --header 'Content-Type: application/json' \
-            -d '{"state": 1}'
+
     fi
+
+    Log "Connecting Thing to Channel"
+    # Uncomment the following line if you want to connect the Thing to the channel
+    $BINARY -m "http:/" -t "$MAINFLUX_THINGS_HOST" -u "$MAINFLUX_USERS_HOST" --raw things connect "$MQTT_USER" "$CHANNEL_ID" "$TOKEN"
+    Log "Activating user"
+    curl -s --fail-with-body --request POST "$MAINFLUX_BOOTSTRAP_HOST/things/state/$MQTT_USER" \
+        --header "Authorization: $TOKEN" \
+        --header 'Content-Type: application/json' \
+        -d '{"state": 1}'
 
     # Create the ENV file
     MQTT_ROOT_TOPIC="channels/$CHANNEL_ID/messages"
