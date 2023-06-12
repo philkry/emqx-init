@@ -10,7 +10,7 @@ RUN apk add --no-cache bash \
 WORKDIR /data    
 
 COPY bootstrap_emqx.sh .
-COPY lib ./lib/
+#COPY lib ./lib/
 RUN chmod +x bootstrap_emqx.sh
 
 ENTRYPOINT [ "./bootstrap_emqx.sh" ]

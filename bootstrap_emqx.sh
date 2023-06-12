@@ -3,14 +3,6 @@
 # Set the script execution environment
 TERM=xterm-256color
 
-# Import necessary libraries
-source "$(cd "${BASH_SOURCE[0]%/*}" && pwd)/lib/oo-bootstrap.sh"
-import util/log util/exception util/tryCatch
-
-# Set the log output
-namespace emqxBootstrap
-Log::AddOutput emqxBootstrap STDERR
-
 # Define the Mainflux hosts and other variables
 EMQX_HOST="${EMQX_HOST:-emqx-dashboard.emqx.svc.cluster.local:18083}"
 EMQX_API_KEY="${EMQX_API_KEY}"
@@ -24,7 +16,7 @@ ENV_FILE="${ENV_FILE:-/data/env/.env}"
 create_env_file() {
     # Create the ENV file
     MQTT_ROOT_TOPIC="channels/$CHANNEL_ID/messages"
-    Log "Creating ENV file"
+    echo "Creating ENV file"
     echo "MQTT_USER=$MQTT_USER" >"$ENV_FILE"
     echo "MQTT_PASSWORD=$MQTT_PASSWORD" >>"$ENV_FILE"
     echo "MQTT_ROOT_TOPIC=$MQTT_ROOT_TOPIC" >>"$ENV_FILE"
@@ -38,7 +30,7 @@ create_env_file() {
 EXISTING_USER=$(http --auth "$EMQX_API_USER:$EMQX_API_KEY" --ignore-stdin --check-status GET http://$EMQX_HOST/api/v5/authentication/password_based:built_in_database/users/node-red &> /dev/null; echo $?)
 
 if [[ $EXISTING_USER -eq 0 ]]; then
-  Log "User 'node-red' already exists."
+  echo "User 'node-red' already exists."
   create_env_file
   exit 0
 fi
@@ -53,15 +45,12 @@ RESPONSE=$(http --auth "$EMQX_API_USER:$EMQX_API_KEY" --ignore-stdin POST http:/
 CREATION_STATUS=$(echo "$RESPONSE" | grep -o -m 1 '"status": "[^"]*' | cut -d'"' -f4)
 
 if [[ $CREATION_STATUS == "success" ]]; then
-  Log "User 'node-red' created successfully."
+  echo "User 'node-red' created successfully."
   create_env_file
   exit 0
 else
   ERROR_MSG=$(echo "$RESPONSE" | grep -o -m 1 '"error": "[^"]*' | cut -d'"' -f4)
-  { e="$ERROR_MSG"; throw; }
-  Log "Caught Exception:$(UI.Color.Red) $__BACKTRACE_COMMAND__ $(UI.Color.Default)"
-  Log "File: $__BACKTRACE_SOURCE__, Line: $__BACKTRACE_LINE__"
-  Exception::PrintException "${__EXCEPTION__[@]}"
+  echo $ERROR_MSG
   exit 1
 fi
 
