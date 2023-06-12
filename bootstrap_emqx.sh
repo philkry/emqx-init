@@ -27,9 +27,8 @@ create_env_file() {
 
 PAYLOAD=$(cat <<EOF
 {
-  "username": "$MQTT_USER",
-  "password": "$MQTT_PASSWORD",
-  "is_superuser": false
+  "user_id": "$MQTT_USER",
+  "password": "$MQTT_PASSWORD"
 }
 EOF
 )
