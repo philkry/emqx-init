@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+
 # Set the script execution environment
 TERM=xterm-256color
 
@@ -24,14 +24,6 @@ create_env_file() {
     echo "MQTT_TOPIC_STAT=$MQTT_ROOT_TOPIC/stat/#" >>"$ENV_FILE"
     echo "MQTT_TOPIC_CMND=$MQTT_ROOT_TOPIC/cmnd/" >>"$ENV_FILE"
 }
-
-PAYLOAD=$(cat <<EOF
-{
-  "user_id": "$MQTT_USER",
-  "password": "$MQTT_PASSWORD"
-}
-EOF
-)
 
 
 # Step 1: Check if user 'node-red' exists
