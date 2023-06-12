@@ -25,6 +25,15 @@ create_env_file() {
     echo "MQTT_TOPIC_CMND=$MQTT_ROOT_TOPIC/cmnd/" >>"$ENV_FILE"
 }
 
+PAYLOAD=$(cat <<EOF
+{
+  "username": "$MQTT_USER",
+  "password": "$MQTT_PASSWORD",
+  "is_superuser": false
+}
+EOF
+)
+
 
 # Step 1: Check if user 'node-red' exists
 EXISTING_USER=$(http --auth "$EMQX_API_USER:$EMQX_API_KEY" --ignore-stdin --check-status GET http://$EMQX_HOST/api/v5/authentication/password_based:built_in_database/users/node-red &> /dev/null; echo $?)
@@ -37,10 +46,7 @@ fi
 
 # Step 2: Create user 'node-red'
 
-RESPONSE=$(http --auth "$EMQX_API_USER:$EMQX_API_KEY" --ignore-stdin POST http://$EMQX_HOST/api/v5/authentication/password_based:built_in_database/users \
-  username="$MQTT_USER" \
-  password="$MQTT_PASSWORD" \
-  is_superuser=false)
+RESPONSE=$(http --auth "$EMQX_API_USER:$EMQX_API_KEY" --ignore-stdin POST http://$EMQX_HOST/api/v5/authentication/password_based:built_in_database/users <<< $PAYLOAD)
 
 CREATION_STATUS=$(echo "$RESPONSE" | grep -o -m 1 '"status": "[^"]*' | cut -d'"' -f4)
 
