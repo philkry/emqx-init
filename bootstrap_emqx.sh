@@ -45,7 +45,7 @@ fi
 
 # Step 2: Create user 'node-red'
 
-RESPONSE=$(http --auth "$EMQX_API_USER:$EMQX_API_KEY" POST "http://$EMQX_HOST/api/v5/authentication/password_based:built_in_database/users" user_id=$MQTT_USER password=$MQTT_PASSWORD)
+RESPONSE=$(http --ignore-stdin --auth "$EMQX_API_USER:$EMQX_API_KEY" POST "http://$EMQX_HOST/api/v5/authentication/password_based:built_in_database/users" user_id=$MQTT_USER password=$MQTT_PASSWORD)
 
 CREATION_STATUS=$(echo "$RESPONSE" | grep -o -m 1 '"status": "[^"]*' | cut -d'"' -f4)
 
