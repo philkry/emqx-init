@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -x
 # Set the script execution environment
 TERM=xterm-256color
 
