@@ -2,7 +2,7 @@
 
 # Set the script execution environment
 TERM=xterm-256color
-
+set -x
 # Define the Mainflux hosts and other variables
 EMQX_HOST="${EMQX_HOST:-emqx-dashboard.emqx.svc.cluster.local:18083}"
 EMQX_API_KEY="${EMQX_API_KEY}"
