@@ -31,7 +31,7 @@ create_authorization() {
     RESPONSE=$(http --ignore-stdin --auth "$EMQX_API_USER:$EMQX_API_KEY" POST "http://$EMQX_HOST/api/v5/authorization/sources/built_in_database/rules/users" \
         [0][username]=$MQTT_USER \
         [0][rules][0][action]=all \
-        [0][rules][0][permission]=all \
+        [0][rules][0][permission]=allow \
         [0][rules][0][topic]="$MQTT_TOPIC/#") 
 
     AUTH_STATUS=$(echo "$RESPONSE" | grep -o -m 1 '"status": "[^"]*' | cut -d'"' -f4)
