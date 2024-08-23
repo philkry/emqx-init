@@ -34,12 +34,12 @@ create_authorization() {
         [0][rules][0][permission]=allow \
         [0][rules][0][topic]="$MQTT_TOPIC/#") 
 
-    AUTH_STATUS=$(echo "$RESPONSE" | grep -o -m 1 '"code": "[^"]*' | cut -d'"' -f4 | tr '[:upper:]' '[:lower:]')
+    AUTH_STATUS=$(echo "$RESPONSE" | grep -o -m 1 '"code":"[^"]*' | cut -d'"' -f4 | tr '[:upper:]' '[:lower:]')
 
     if [[ $AUTH_STATUS == "success" || $AUTH_STATUS == "already_exists" ]]; then
         echo "Authorization for topic '$MQTT_TOPIC' created successfully."
     else
-        ERROR_MSG=$(echo "$RESPONSE" | grep -o -m 1 '"error": "[^"]*' | cut -d'"' -f4)
+        ERROR_MSG=$(echo "$RESPONSE" | grep -o -m 1 '"message":"[^"]*' | cut -d'"' -f4)
         echo "Failed to create authorization: $ERROR_MSG"
         exit 1
     fi
