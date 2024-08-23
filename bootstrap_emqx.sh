@@ -32,7 +32,7 @@ create_authorization() {
         username=$MQTT_USER \
         rules[][action]=all \
         rules[][permission]=all \
-        rules[][topic]="eq $MQTT_TOPIC/#" 
+        rules[][topic]="eq $MQTT_TOPIC/#") 
 
     AUTH_STATUS=$(echo "$RESPONSE" | grep -o -m 1 '"status": "[^"]*' | cut -d'"' -f4)
 
