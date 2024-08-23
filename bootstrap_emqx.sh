@@ -25,6 +25,25 @@ create_env_file() {
     echo "MQTT_TOPIC_CMND=$MQTT_ROOT_TOPIC/cmnd/" >>"$ENV_FILE"
 }
 
+create_authorization() {
+    # Create authorization for the MQTT_TOPIC
+    MQTT_TOPIC="channels/$CHANNEL_ID/messages"
+    RESPONSE=$(http --ignore-stdin --auth "$EMQX_API_USER:$EMQX_API_KEY" POST "http://$EMQX_HOST/api/v5/authorization/sources/built_in_database/username" \
+        username=$MQTT_USER \
+        rules[][action]=all \
+        rules[][permission]=all \
+        rules[][topic]="eq $MQTT_TOPIC/#" 
+
+    AUTH_STATUS=$(echo "$RESPONSE" | grep -o -m 1 '"status": "[^"]*' | cut -d'"' -f4)
+
+    if [[ $AUTH_STATUS == "success" ]]; then
+        echo "Authorization for topic '$MQTT_TOPIC' created successfully."
+    else
+        ERROR_MSG=$(echo "$RESPONSE" | grep -o -m 1 '"error": "[^"]*' | cut -d'"' -f4)
+        echo "Failed to create authorization: $ERROR_MSG"
+        exit 1
+    fi
+}
 
 # Step 1: Check if user 'node-red' exists
 EXISTING_USER=$(http --auth "$EMQX_API_USER:$EMQX_API_KEY" --ignore-stdin --check-status GET "http://$EMQX_HOST/api/v5/authentication/password_based:built_in_database/users/node-red" &> /dev/null; echo $?)
@@ -32,6 +51,7 @@ EXISTING_USER=$(http --auth "$EMQX_API_USER:$EMQX_API_KEY" --ignore-stdin --chec
 if [[ $EXISTING_USER -eq 0 ]]; then
   echo "User 'node-red' already exists."
   create_env_file
+  create_authorization
   exit 0
 fi
 
@@ -44,6 +64,7 @@ CREATION_STATUS=$(echo "$RESPONSE" | grep -o -m 1 '"status": "[^"]*' | cut -d'"'
 if [[ $CREATION_STATUS == "success" ]]; then
   echo "User 'node-red' created successfully."
   create_env_file
+  create_authorization
   exit 0
 else
   ERROR_MSG=$(echo "$RESPONSE" | grep -o -m 1 '"error": "[^"]*' | cut -d'"' -f4)
