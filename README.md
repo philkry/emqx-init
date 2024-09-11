@@ -49,7 +49,7 @@ spec:
     spec:
       initContainers:
       - name: emqx-init
-        image: your-docker-registry/node-red-emqx-init:latest
+        image: ghcr.io/your-username/node-red-emqx-init:latest
         env:
         - name: EMQX_HOST
           value: "emqx-dashboard.emqx.svc.cluster.local:18083"
@@ -92,18 +92,38 @@ Make sure to create the necessary secrets (`emqx-secrets` and `mqtt-secrets` in 
 
 This init container will run before the main Node-RED container starts, ensuring that the required MQTT users are created and properly configured in EMQX.
 
-## Building the Docker Image
+## Automated Releases and Container Publishing
 
-To build the Docker image:
+This project uses GitHub Actions to automatically create releases and publish Docker containers when a new tag is pushed. The workflow does the following:
+
+1. Creates a new GitHub release for the tag.
+2. Builds a Docker image.
+3. Publishes the Docker image to GitHub Container Registry (ghcr.io).
+
+To trigger this workflow:
+
+1. Create and push a new tag:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+2. The workflow will automatically run, creating a new release and publishing the container.
+
+3. You can then use the published container in your Kubernetes deployments:
+   ```yaml
+   image: ghcr.io/your-username/node-red-emqx-init:v1.0.0
+   ```
+
+   Replace `your-username` with your GitHub username or organization name.
+
+## Manual Building and Pushing
+
+If you need to build and push the Docker image manually:
 
 ```bash
-docker build -t your-docker-registry/node-red-emqx-init:latest .
+docker build -t ghcr.io/your-username/node-red-emqx-init:latest .
+docker push ghcr.io/your-username/node-red-emqx-init:latest
 ```
 
-Push the image to your Docker registry:
-
-```bash
-docker push your-docker-registry/node-red-emqx-init:latest
-```
-
-Replace `your-docker-registry` with the appropriate Docker registry for your environment.
+Replace `your-username` with your GitHub username or organization name.
