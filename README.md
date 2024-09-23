@@ -1,4 +1,4 @@
-# Node-Red-EMQX-Init
+# EMQX-Init
 
 This project provides a script to bootstrap EMQX with multiple users and their permissions for use with Node-RED.
 
