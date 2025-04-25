@@ -12,6 +12,9 @@ This project provides a script to bootstrap EMQX with multiple users and their p
 | CHANNEL_ID | MQTT Channel ID | 3c78cf3f-d5b5-40ed-b851-bd86c2edaa52 |
 | MQTT_USERS | Comma-separated list of MQTT users to create | node-red |
 | &lt;USERNAME&gt;_PASSWORD | Password for each MQTT user (e.g., NODE_RED_PASSWORD) | not set |
+| MAX_RETRIES | Maximum number of retry attempts for failed requests | 5 |
+| RETRY_DELAY | Delay in seconds between retry attempts | 5 |
+| HTTP_TIMEOUT | Timeout in seconds for HTTP requests | 10 |
 
 ## Usage
 
